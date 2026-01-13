@@ -3,15 +3,16 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../configs/firebase";
 import { useEffect, useState } from "react";
 import { router } from "expo-router";
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator, Image } from "react-native";
 import { useFonts } from "expo-font";
+import { User } from "firebase/auth";
 import * as SplashScreen from 'expo-splash-screen';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
     const [initializing, setInitializing] = useState(true);
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<User | null>(null);
 
     // 1. Capture the boolean return value here
     const [fontsLoaded] = useFonts({
@@ -34,7 +35,7 @@ export default function RootLayout() {
         if (!initializing && fontsLoaded) {
             SplashScreen.hideAsync();
             if (user) {
-                router.replace("/(tabs)/home"); // Or wherever your main app is
+                router.replace("/(protected)/(tabs)");
             } else {
                 router.replace("/(auth)/signin");
             }
@@ -45,6 +46,7 @@ export default function RootLayout() {
     if (initializing || !fontsLoaded) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Image source={require("@assets/images/logo.png")} style={{ height: 50, width: 120, marginVertical: 20 }} />
                 <ActivityIndicator size="large" />
             </View>
         );

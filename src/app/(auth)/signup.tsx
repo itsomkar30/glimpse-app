@@ -1,17 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-    View,
-    Text,
-    TextInput,
-    Pressable,
-    StyleSheet,
-    Image,
-    ImageBackground,
-    Keyboard,
-    Animated,
-} from "react-native";
+import { View, Text, TextInput, Pressable, StyleSheet, Image, ImageBackground, Keyboard, Animated, } from "react-native";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "@/configs/firebase";
+import { auth } from "../../configs/firebase";
 import { router } from "expo-router";
 import { colors } from "@/constants/colors";
 
@@ -21,7 +11,6 @@ export default function Signup() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // 🔹 SAME keyboard animation pattern
     const translateY = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
@@ -67,7 +56,7 @@ export default function Signup() {
                 displayName: name,
             });
 
-            router.replace("/index");
+            router.replace("/(protected)/(tabs)");
         } catch (error: any) {
             alert(error.message);
         } finally {
@@ -77,7 +66,7 @@ export default function Signup() {
 
     return (
         <View style={styles.screen}>
-            {/* 🔹 SAME TOP IMAGE */}
+            {/* SAME TOP IMAGE */}
             <ImageBackground
                 source={require("../../../assets/images/login-bg.jpg")}
                 style={styles.topImage}
@@ -90,7 +79,7 @@ export default function Signup() {
                 </View>
             </ImageBackground>
 
-            {/* 🔹 Animated Form */}
+            {/* Animated Form */}
             <Animated.View
                 style={[
                     styles.formContainer,
@@ -131,7 +120,7 @@ export default function Signup() {
                     </Text>
                 </Pressable>
 
-                <Pressable onPress={() => router.push("/signin")}>
+                <Pressable onPress={() => router.push("/(auth)/signin")}>
                     <Text style={styles.link}>
                         Already have an account? Sign in
                     </Text>
@@ -144,7 +133,7 @@ export default function Signup() {
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
-        backgroundColor: "#fff",
+        backgroundColor: colors.appPrimary,
     },
 
     topImage: {

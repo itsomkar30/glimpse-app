@@ -45,7 +45,7 @@ export default function Signin() {
         try {
             setLoading(true);
             await signInWithEmailAndPassword(auth, email, password);
-            router.replace("/index");
+            router.replace("/(protected)/(tabs)");
         } catch {
             alert("Invalid email or password");
         } finally {
@@ -101,7 +101,7 @@ export default function Signin() {
                     </Text>
                 </Pressable>
 
-                <Pressable onPress={() => router.push("/signup")}>
+                <Pressable onPress={() => router.push("/(auth)/signup")}>
                     <Text style={styles.link}>Create new account</Text>
                 </Pressable>
             </Animated.View>
@@ -113,7 +113,7 @@ export default function Signin() {
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
-        backgroundColor: "#fff",
+        backgroundColor: colors.appPrimary,
     },
 
 
