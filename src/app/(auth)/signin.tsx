@@ -1,16 +1,40 @@
-import { View, Text, TextInput, Pressable, StyleSheet, Image } from "react-native";
-import { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { View, Text, TextInput, Pressable, StyleSheet, Image, ImageBackground, Keyboard, Animated, Platform, } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../configs/firebase";
 import { router } from "expo-router";
-import { ImageBackground } from "react-native";
 import { colors } from "@/constants/colors";
-
 
 export default function Signin() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+
+    const translateY = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        const showSub = Keyboard.addListener("keyboardDidShow", (e) => {
+            const h = e.endCoordinates.height;
+            Animated.timing(translateY, {
+                toValue: -h,
+                duration: 220,
+                useNativeDriver: true,
+            }).start();
+        });
+
+        const hideSub = Keyboard.addListener("keyboardDidHide", () => {
+            Animated.timing(translateY, {
+                toValue: 0,
+                duration: 180,
+                useNativeDriver: true,
+            }).start();
+        });
+
+        return () => {
+            showSub.remove();
+            hideSub.remove();
+        };
+    }, []);
 
     const handleSignin = async () => {
         if (!email || !password) {
@@ -22,7 +46,7 @@ export default function Signin() {
             setLoading(true);
             await signInWithEmailAndPassword(auth, email, password);
             router.replace("/index");
-        } catch (error: any) {
+        } catch {
             alert("Invalid email or password");
         } finally {
             setLoading(false);
@@ -31,22 +55,27 @@ export default function Signin() {
 
     return (
         <View style={styles.screen}>
-            {/* Top background */}
+            {/* Top image */}
             <ImageBackground
                 source={require("../../../assets/images/login-bg.jpg")}
                 style={styles.topImage}
-                resizeMode="cover"
             >
-
-
                 <View style={styles.overlay}>
-                    <Image source={require("../../../assets/images/logo.png")} style={{ height: 50, width: 120 }} />
+                    <Image
+                        source={require("../../../assets/images/logo.png")}
+                        style={{ height: 50, width: 120 }}
+                    />
                 </View>
             </ImageBackground>
 
-            {/*Signin container */}
-            <View style={styles.formContainer}>
-                <Text numberOfLines={1} style={styles.title}>Dive into endless entertainment</Text>
+            {/* Animated Form */}
+            <Animated.View
+                style={[
+                    styles.formContainer,
+                    { transform: [{ translateY }] },
+                ]}
+            >
+                <Text style={styles.title}>Dive into endless entertainment</Text>
 
                 <TextInput
                     placeholder="Email"
@@ -75,11 +104,11 @@ export default function Signin() {
                 <Pressable onPress={() => router.push("/signup")}>
                     <Text style={styles.link}>Create new account</Text>
                 </Pressable>
-            </View>
+            </Animated.View>
         </View>
     );
-
 }
+
 
 const styles = StyleSheet.create({
     screen: {
@@ -122,7 +151,7 @@ const styles = StyleSheet.create({
     input: {
         borderWidth: 1,
         borderColor: "lightgrey",
-        borderRadius: 10,
+        borderRadius: 8,
         padding: 14,
         marginBottom: 15,
         color: colors.textPrimary,
@@ -132,7 +161,7 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: colors.appTheme,
         padding: 12,
-        borderRadius: 6,
+        borderRadius: 8,
         alignItems: "center",
     },
 
