@@ -7,6 +7,9 @@ import { View, Text, ActivityIndicator, Image } from "react-native";
 import { useFonts } from "expo-font";
 import { User } from "firebase/auth";
 import * as SplashScreen from 'expo-splash-screen';
+import { Provider } from "react-redux";
+import store from '../redux/store'
+import { setUser as setUserAction, clearUser as clearUserAction } from '../redux/features/auth/authSlice'
 
 SplashScreen.preventAutoHideAsync();
 
@@ -14,7 +17,6 @@ export default function RootLayout() {
     const [initializing, setInitializing] = useState(true);
     const [user, setUser] = useState<User | null>(null);
 
-    // 1. Capture the boolean return value here
     const [fontsLoaded] = useFonts({
         'outfit': require('../../assets/fonts/Outfit-Regular.ttf'),
         'outfit-medium': require('../../assets/fonts/Outfit-Medium.ttf'),
@@ -25,13 +27,26 @@ export default function RootLayout() {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUser(user);
             if (initializing) setInitializing(false);
+
+            if (user) {
+                store.dispatch(
+                    setUserAction({
+                        uid: user.uid,
+                        displayName: user.displayName ?? null,
+                        email: user.email ?? null,
+                        photoURL: user.photoURL ?? null,
+                    })
+                );
+            } else {
+                store.dispatch(clearUserAction());
+            }
+
         });
 
         return unsubscribe;
-    }, []); // Removed 'initializing' dependency to prevent unnecessary re-runs
+    }, []);
 
     useEffect(() => {
-        // 2. Add !fontsLoaded to this check so we don't navigate before fonts are ready
         if (!initializing && fontsLoaded) {
             SplashScreen.hideAsync();
             if (user) {
@@ -42,7 +57,6 @@ export default function RootLayout() {
         }
     }, [user, initializing, fontsLoaded]);
 
-    // 3. Show Loading screen if EITHER Auth is initializing OR Fonts are not loaded
     if (initializing || !fontsLoaded) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -52,5 +66,9 @@ export default function RootLayout() {
         );
     }
 
-    return <Stack screenOptions={{ headerShown: false }} />;
+    return (
+        <Provider store={store}>
+            <Stack screenOptions={{ headerShown: false }} />
+        </Provider>
+    );
 }
