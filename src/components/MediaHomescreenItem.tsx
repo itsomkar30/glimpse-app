@@ -3,7 +3,19 @@ import React from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import { colors } from '@/constants/colors'
 
-export default function MediaHomescreenItem() {
+type MediaHomeScreenItemProps = {
+    backdropUrl: string;
+    title: string;
+    meta: string;
+    onPress?: () => void;
+};
+
+export default function MediaHomescreenItem({
+    backdropUrl,
+    title,
+    meta,
+    onPress,
+}: MediaHomeScreenItemProps) {
     return (
         <View
             style={{
@@ -15,7 +27,7 @@ export default function MediaHomescreenItem() {
         >
             <ImageBackground
                 source={{
-                    uri: 'https://m.media-amazon.com/images/M/MV5BMzU5ZGYzNmQtMTdhYy00OGRiLTg0NmQtYjVjNzliZTg1ZGE4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg',
+                    uri: backdropUrl,
                 }}
                 style={{
                     width: '100%',
@@ -25,7 +37,14 @@ export default function MediaHomescreenItem() {
             >
 
                 <LinearGradient
-                    colors={['rgba(0,0,0,0.9)', 'rgba(0,0,0,0)']}
+                    colors={[
+                        'rgba(0,0,0,0.95)',
+                        'rgba(0,0,0,0.85)',
+                        'rgba(0,0,0,0.6)',
+                        'rgba(0,0,0,0.3)',
+                        'rgba(0,0,0,0)'
+                    ]}
+                    locations={[0, 0.3, 0.5, 0.75, 1]}
                     start={{ x: 0.5, y: 1 }} // bottom
                     end={{ x: 0.5, y: 0 }}   // top
                     style={{
@@ -33,20 +52,22 @@ export default function MediaHomescreenItem() {
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        height: '50%', // 
+                        height: '50%',
                     }}
                 />
-                <Text style={{
+                <Text numberOfLines={2} style={{
                     fontFamily: 'outfit-medium',
                     fontSize: 30,
                     color: colors.textPrimary,
                     position: 'absolute',
                     bottom: 120,
                     alignSelf: 'center',
-                    zIndex: 5
-                }}>Breaking Bad</Text>
+                    zIndex: 5,
+                    textAlign: 'center'
 
-                <Text style={{
+                }}>{title}</Text>
+
+                {/* <Text style={{
                     fontFamily: 'outfit-medium',
                     fontSize: 15,
                     color: colors.textPrimary,
@@ -54,10 +75,11 @@ export default function MediaHomescreenItem() {
                     bottom: 90,
                     alignSelf: 'center',
                     zIndex: 5
-                }}>2013 • English • 5 Seasons • 89% </Text>
+                }}>2013 • English • 5 Seasons • 89% </Text> */}
 
+                <Text style={styles.meta}>{meta}</Text>
 
-                <Pressable style={styles.button}>
+                <Pressable style={styles.button} onPress={onPress}>
                     <Text style={styles.buttonText}>Watch now</Text>
                 </Pressable>
             </ImageBackground>
@@ -90,5 +112,13 @@ const styles = StyleSheet.create({
         color: colors.appPrimary,
         fontFamily: 'outfit-medium',
         fontSize: 16,
+    },
+    meta: {
+        fontFamily: "outfit-medium",
+        fontSize: 15,
+        color: colors.textPrimary,
+        position: "absolute",
+        bottom: 90,
+        alignSelf: "center",
     },
 })
