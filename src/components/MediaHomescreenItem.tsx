@@ -19,7 +19,7 @@ export default function MediaHomescreenItem({
     return (
         <View
             style={{
-                height: '50%',
+                height: 450,
                 width: '100%',
                 overflow: 'hidden',
                 backgroundColor: colors.appPrimary,
@@ -67,15 +67,6 @@ export default function MediaHomescreenItem({
 
                 }}>{title}</Text>
 
-                {/* <Text style={{
-                    fontFamily: 'outfit-medium',
-                    fontSize: 15,
-                    color: colors.textPrimary,
-                    position: 'absolute',
-                    bottom: 90,
-                    alignSelf: 'center',
-                    zIndex: 5
-                }}>2013 • English • 5 Seasons • 89% </Text> */}
 
                 <Text style={styles.meta}>{meta}</Text>
 
