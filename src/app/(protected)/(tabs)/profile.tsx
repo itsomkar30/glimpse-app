@@ -1,12 +1,10 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import React from 'react';
 import { auth } from '../../../configs/firebase';
 import { signOut } from 'firebase/auth';
 import { router } from 'expo-router';
 import { colors } from '@/constants/colors';
-import MediaHomescreenItem from '@/components/MediaHomescreenItem';
 
-export default function index() {
+export default function profile() {
     const user = auth.currentUser;
 
     const handleLogout = async () => {
@@ -16,8 +14,10 @@ export default function index() {
 
     return (
         <View style={styles.container}>
-            <MediaHomescreenItem />
-
+            <Text style={styles.title}>Welcome, {user?.displayName || user?.email}!</Text>
+            <Pressable style={styles.button} onPress={handleLogout}>
+                <Text style={styles.buttonText}>Logout</Text>
+            </Pressable>
         </View>
     );
 }
@@ -25,8 +25,9 @@ export default function index() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.appPrimary
-
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 24,
     },
     title: {
         fontSize: 24,
