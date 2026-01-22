@@ -10,7 +10,7 @@ export async function fetchPopularMovies() {
 
 export async function fetchPopularTVShows() {
     const res = await fetch(
-        `${TMDB_BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}`
+        `${TMDB_BASE_URL}/trending/tv/day?api_key=${TMDB_API_KEY}`
     );
     const data = await res.json();
     return data.results;
@@ -19,6 +19,14 @@ export async function fetchPopularTVShows() {
 export async function fetchTrending() {
     const res = await fetch(
         `${TMDB_BASE_URL}/trending/all/week?api_key=${TMDB_API_KEY}`
+    );
+    const data = await res.json();
+    return data.results;
+}
+
+export async function fetchTopRatedMovies() {
+    const res = await fetch(
+        `${TMDB_BASE_URL}/movie/top_rated?api_key=${TMDB_API_KEY}`
     );
     const data = await res.json();
     return data.results;

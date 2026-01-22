@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 import { colors } from '@/constants/colors';
 import MediaHomescreenItem from '@/components/MediaHomescreenItem';
 import { useDispatch, useSelector } from "react-redux";
-import { loadTrending, loadPopularMovies } from '@/redux/features/home/movieInfoSlice'
+import { loadTrending, loadPopularMovies, loadPopularTVShows, loadTopRatedMovies } from '@/redux/features/home/movieInfoSlice'
 import { RootState, AppDispatch } from "@/redux/store";
 import { useEffect } from "react";
 import { getFirstGenre, TMDB_IMAGE_BASE_URL } from "@/constants/tmdb";
@@ -25,6 +25,8 @@ export default function index() {
     useEffect(() => {
         dispatch(loadPopularMovies());
         dispatch(loadTrending());
+        dispatch(loadPopularTVShows());
+        dispatch(loadTopRatedMovies());
     }, []);
 
 
@@ -34,6 +36,14 @@ export default function index() {
 
     const trending = useSelector(
         (state: RootState) => state.movieInfo.trending
+    );
+
+    const tvshows = useSelector(
+        (state: RootState) => state.movieInfo.popularTVShows
+    );
+
+    const topRatedMovies = useSelector(
+        (state: RootState) => state.movieInfo.topRatedMovies
     );
 
     useEffect(() => {
@@ -70,7 +80,7 @@ export default function index() {
 
                 <FlatList
                     ref={flatListRef}
-                    data={popular}
+                    data={tvshows}
                     horizontal
                     pagingEnabled
                     showsHorizontalScrollIndicator={true}
@@ -122,7 +132,7 @@ export default function index() {
                 />
 
 
-                <Text style={styles.sectionHeader}>Trending now</Text>
+                <Text style={styles.sectionHeader}>Popular TV Shows</Text>
 
 
                 <FlatList
@@ -130,7 +140,7 @@ export default function index() {
                         paddingHorizontal: 10,
                         paddingVertical: 5
                     }}
-                    data={trending}
+                    data={tvshows}
                     horizontal
                     showsHorizontalScrollIndicator={true}
                     keyExtractor={(item) => item.id.toString()}
@@ -148,6 +158,36 @@ export default function index() {
 
                     )}
                 />
+
+
+                <Text style={styles.sectionHeader}>Top rated movies</Text>
+
+
+                <FlatList
+                    style={{
+                        paddingHorizontal: 10,
+                        paddingVertical: 5
+                    }}
+                    data={topRatedMovies}
+                    horizontal
+                    showsHorizontalScrollIndicator={true}
+                    keyExtractor={(item) => item.id.toString()}
+                    onScrollToIndexFailed={() => { }}
+                    renderItem={({ item }) => (
+
+                        <MediaItem
+                            backdropUrl={`${TMDB_IMAGE_BASE_URL}${item.backdrop_path}`}
+                            title={item.title || item.name}
+                            meta={`⭐ ${item.vote_average.toFixed(1)} • ${item.first_air_date?.slice(0, 4) ||
+                                item.release_date?.slice(0, 4)
+                                } • ${getLanguageName(item.original_language)}`}
+
+                            onPress={() => router.push(`/(protected)/media/${item.id}`)} />
+
+                    )}
+                />
+
+                <View style={{ height: 40 }}></View>
 
             </ScrollView>
 

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchPopularMovies, fetchPopularTVShows, fetchTrending } from "@/services/mediaInfoService"
+import { fetchPopularMovies, fetchPopularTVShows, fetchTrending, fetchTopRatedMovies } from "@/services/mediaInfoService"
 
 export const loadPopularMovies = createAsyncThunk(
     "media/loadPopularMovies",
@@ -23,10 +23,18 @@ export const loadPopularTVShows = createAsyncThunk(
     }
 );
 
+export const loadTopRatedMovies = createAsyncThunk(
+    "media/loadTopRatedMovies",
+    async () => {
+        return await fetchTopRatedMovies();
+    }
+);
+
 type MediaState = {
     trending: any[];
     popularMovies: any[];
     popularTVShows: any[];
+    topRatedMovies: any[];
     loading: boolean;
     error: string | null;
 };
@@ -35,6 +43,7 @@ const initialState: MediaState = {
     trending: [],
     popularMovies: [],
     popularTVShows: [],
+    topRatedMovies: [],
     loading: false,
     error: null,
 };
@@ -46,7 +55,7 @@ const movieInfoSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            // 🔥 Trending (HERO)
+
             .addCase(loadTrending.pending, (state) => {
                 state.loading = true;
             })
@@ -72,6 +81,12 @@ const movieInfoSlice = createSlice({
             .addCase(loadPopularTVShows.fulfilled, (state, action) => {
                 state.loading = false;
                 state.popularTVShows = action.payload;
+            })
+
+            // Top Rated Movies
+            .addCase(loadTopRatedMovies.fulfilled, (state, action) => {
+                state.loading = false;
+                state.topRatedMovies = action.payload;
             });
     },
 });

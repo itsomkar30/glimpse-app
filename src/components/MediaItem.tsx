@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     ratingText: {
         color: colors.textPrimary,
         fontFamily: 'outfit',
-        fontSize: 12,
+        fontSize: 11,
         marginTop: 8,
         maxWidth: 110,
     },
