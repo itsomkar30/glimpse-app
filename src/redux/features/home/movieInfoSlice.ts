@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchPopularMovies, fetchPopularTVShows, fetchTrending, fetchTopRatedMovies } from "@/services/mediaInfoService"
+import { fetchPopularMovies, fetchPopularTVShows, fetchTrending, fetchTopRatedMovies, searchAllShows } from "@/services/mediaInfoService"
+
+
 
 export const loadPopularMovies = createAsyncThunk(
     "media/loadPopularMovies",
@@ -30,11 +32,22 @@ export const loadTopRatedMovies = createAsyncThunk(
     }
 );
 
+export const searchShows = createAsyncThunk(
+    "media/searchShows",
+    async (query: string) => {
+        return await searchAllShows(query);
+    }
+
+);
+
+
 type MediaState = {
     trending: any[];
     popularMovies: any[];
     popularTVShows: any[];
     topRatedMovies: any[];
+    searchResults: any[];
+    searchStatus: "idle" | "loading" | "succeeded" | "failed";
     loading: boolean;
     error: string | null;
 };
@@ -44,6 +57,8 @@ const initialState: MediaState = {
     popularMovies: [],
     popularTVShows: [],
     topRatedMovies: [],
+    searchResults: [],
+    searchStatus: "idle",
     loading: false,
     error: null,
 };
@@ -52,7 +67,12 @@ const initialState: MediaState = {
 const movieInfoSlice = createSlice({
     name: "media",
     initialState,
-    reducers: {},
+    reducers: {
+        clearSearch(state) {
+            state.searchResults = [];
+            state.searchStatus = "idle";
+        },
+    },
     extraReducers: (builder) => {
         builder
 
@@ -87,7 +107,24 @@ const movieInfoSlice = createSlice({
             .addCase(loadTopRatedMovies.fulfilled, (state, action) => {
                 state.loading = false;
                 state.topRatedMovies = action.payload;
+            })
+
+            //  Search movies and tv
+            .addCase(searchShows.pending, (state) => {
+                state.searchStatus = "loading";
+            })
+
+            .addCase(searchShows.fulfilled, (state, action) => {
+                state.searchStatus = "succeeded";
+                state.searchResults = action.payload;
+            })
+
+            .addCase(searchShows.rejected, (state, action) => {
+                state.searchStatus = "failed";
+                state.error = action.error.message ?? "Search failed";
             });
     },
 });
+
+export const { clearSearch } = movieInfoSlice.actions;
 export default movieInfoSlice.reducer;

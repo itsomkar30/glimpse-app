@@ -123,7 +123,7 @@ export default function index() {
                         <MediaItem
                             backdropUrl={`${TMDB_IMAGE_BASE_URL}${item.backdrop_path}`}
                             title={item.title || item.name}
-                            meta={getFirstGenre(item.genre_ids)}
+                            meta={`${getFirstGenre(item.genre_ids)} ⭐ ${item.vote_average.toFixed(1)}`}
 
 
                             onPress={() => router.push(`/(protected)/media/${item.id}`)} />

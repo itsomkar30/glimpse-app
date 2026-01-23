@@ -31,3 +31,17 @@ export async function fetchTopRatedMovies() {
     const data = await res.json();
     return data.results;
 }
+
+export async function searchAllShows(query: string) {
+    if (!query) return [];
+
+    const res = await fetch(
+        `${TMDB_BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`
+    );
+
+    const data = await res.json();
+
+    return data.results.filter(
+        (item: any) => item.media_type === "movie" || item.media_type === "tv"
+    );
+}
