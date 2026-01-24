@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput } from 'react-native'
+import { View, Text, StyleSheet, TextInput, FlatList } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { colors } from '@/constants/colors'
@@ -6,6 +6,10 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { clearSearch, searchShows } from '@/redux/features/home/movieInfoSlice'
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from '@/redux/store';
+import MediaItem from '@/components/MediaItem';
+import { router } from 'expo-router';
+import { TMDB_IMAGE_BASE_URL } from '@/constants/tmdb';
+import SearchMediaItem from '@/components/SearchMediaItem';
 
 export default function profile() {
     const [searchValue, setSearchValue] = useState<string>("")
@@ -67,27 +71,45 @@ export default function profile() {
 
                 </View>
 
-                <Text style={styles.sectionHeader}>Top Results</Text>
-                {searchStatus === 'loading' && (
-                    <Text style={{ color: colors.textPrimary }}>Loading...</Text>
+                {searchStatus === 'succeeded' && (
+                    <Text style={styles.sectionHeader}>Top Results</Text>
                 )}
 
-                {searchStatus === 'succeeded' &&
-                    searchResults.map((item, index) => (
-                        <Text
-                            key={index}
-                            style={{ color: colors.textPrimary, paddingVertical: 4 }}
-                        >
-                            {item.title || item.name}
-                        </Text>
-                    ))}
+                {searchStatus === 'loading' && (
+                    <Text style={styles.sectionHeader}>Loading...</Text>
+                )}
+
+                {searchStatus === 'succeeded' && (
+                    <FlatList
+                        data={searchResults}
+                        keyExtractor={(item) => item.id.toString()}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{ paddingRight: 10 }}
+                        renderItem={({ item }) => (
+                            <SearchMediaItem
+                                backdropUrl={`${TMDB_IMAGE_BASE_URL}${item.backdrop_path}`}
+                                title={item.title || item.name}
+                                meta={`⭐ ${item.vote_average.toFixed(1)}`}
+                                onPress={() =>
+                                    router.push(`/(protected)/media/${item.id}`)
+                                }
+                            />
+                        )}
+                    />
+                )}
+
 
                 {searchStatus === 'succeeded' && searchResults.length === 0 && (
                     <Text style={{ color: colors.textPrimary }}>No results found</Text>
                 )}
 
+                <Text style={styles.sectionHeader}>Recommendations</Text>
+
 
             </View>
+
+
         </SafeAreaView>
     )
 }
@@ -104,7 +126,7 @@ const styles = StyleSheet.create({
         color: colors.textPrimary,
         paddingTop: 10,
         paddingBottom: 10,
-        paddingHorizontal: 10,
+        paddingHorizontal: 5,
 
     }
 })
