@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchPopularMovies, fetchPopularTVShows, fetchTrending, fetchTopRatedMovies, searchAllShows } from "@/services/mediaInfoService"
+import { fetchPopularMovies, fetchPopularTVShows, fetchTrending, fetchTopRatedMovies, searchAllShows, recommendationsByLang } from "@/services/mediaInfoService"
 
 
 
@@ -40,6 +40,18 @@ export const searchShows = createAsyncThunk(
 
 );
 
+export const loadRecommendationsByLang = createAsyncThunk(
+    "media/loadRecommendationsByLang",
+    async (language: string) => {
+        const data = await recommendationsByLang(language);
+        return {
+            language,
+            data,
+        };
+    }
+);
+
+
 
 type MediaState = {
     trending: any[];
@@ -48,6 +60,8 @@ type MediaState = {
     topRatedMovies: any[];
     searchResults: any[];
     searchStatus: "idle" | "loading" | "succeeded" | "failed";
+    selectedLanguage: string;
+    recommendationsByLanguage: any[];
     loading: boolean;
     error: string | null;
 };
@@ -59,6 +73,8 @@ const initialState: MediaState = {
     topRatedMovies: [],
     searchResults: [],
     searchStatus: "idle",
+    selectedLanguage: "hi",
+    recommendationsByLanguage: [],
     loading: false,
     error: null,
 };
@@ -122,7 +138,22 @@ const movieInfoSlice = createSlice({
             .addCase(searchShows.rejected, (state, action) => {
                 state.searchStatus = "failed";
                 state.error = action.error.message ?? "Search failed";
-            });
+            })
+
+            .addCase(loadRecommendationsByLang.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(loadRecommendationsByLang.fulfilled, (state, action) => {
+                state.loading = false;
+                state.selectedLanguage = action.payload.language;
+                state.recommendationsByLanguage = action.payload.data;
+            })
+            .addCase(loadRecommendationsByLang.rejected, (state, action) => {
+                state.loading = false;
+                state.error =
+                    action.error.message ?? "Failed to load recommendations by language";
+            })
+
     },
 });
 

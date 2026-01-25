@@ -63,6 +63,16 @@ export const TMDB_TV_GENRE_MAP: Record<number, string> = {
     37: "Western",
 };
 
+export const languages = [
+    { label: "Hindi", code: "hi" },
+    { label: "English", code: "en" },
+    { label: "Marathi", code: "mr" },
+    { label: "Tamil", code: "ta" },
+    { label: "Telugu", code: "te" },
+    { label: "Spanish", code: "es" },
+    { label: "Japanese", code: "ja" },
+];
+
 
 export function getLanguageName(code?: string) {
     if (!code) return "Unknown";
