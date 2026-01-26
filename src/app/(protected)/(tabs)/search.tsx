@@ -45,6 +45,9 @@ export default function profile() {
         console.log('results:', searchResults);
     }, [searchStatus, searchResults]);
 
+    useEffect(() => {
+        loadLanguageRecommnedations("hi")
+    }, []);
 
     const loadLanguageRecommnedations = (language: string) => {
         dispatch(loadRecommendationsByLang(language));
@@ -136,8 +139,10 @@ export default function profile() {
                             <LanguageItem
                                 label={item.label}
                                 language={item.code}
+                                selected={item.code === selectedLanguage}
                                 onPress={loadLanguageRecommnedations}
                             />
+
                         )}
                         contentContainerStyle={styles.languageContainer}
                         horizontal
